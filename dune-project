@@ -7,7 +7,7 @@
 (source
  (github username/reponame))
 
-(authors "Author Name")
+(authors "masterteapot")
 
 (maintainers "Maintainer Name")
 
@@ -17,8 +17,8 @@
 
 (package
  (name adv_2022)
- (synopsis "A short synopsis")
- (description "A longer description")
+ (synopsis "Ocaml Advent of Code 2022")
+ (description "Done by yours truly")
  (depends ocaml dune)
  (tags
   (topics "to describe" your project)))

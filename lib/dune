@@ -1,2 +1,3 @@
 (library
- (name adv_2022))
+ (name adv_2022)
+ (libraries batteries))
