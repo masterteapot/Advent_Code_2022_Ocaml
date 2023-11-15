@@ -15,20 +15,76 @@ let rec remove_empty_string a_list =
 ;;
 
 let rec pp a_list =
-    match a_list with
-    [] -> print_endline "\n"
-    | hd :: tl -> Printf.printf "\n%s[ " ""; List.iter (Printf.printf "%d; ") hd;  Printf.printf "%s]" ""; pp tl
+  match a_list with
+  | [] -> print_endline "\n"
+  | hd :: tl ->
+    Printf.printf "\n%s[ " "";
+    List.iter (Printf.printf "%d; ") hd;
+    Printf.printf "%s]" "";
+    pp tl
+;;
 
+(* Zero indexed *)
+let index_multi_list x y (deep_list : int list list) =
+  let inner_list = List.nth deep_list y in
+  List.nth inner_list x
+;;
 
-let outcome_1 = 1
-let outcome_2 = 2
+let rec get_all_verti_values x (deep_list : int list list) =
+  match deep_list with
+  | [] -> []
+  | hd :: tl -> List.nth hd x :: get_all_verti_values x tl
+;;
+
+let find_view_path x y (deep_list : int list list) =
+  let hori = List.nth deep_list y |> List.remove_at x in
+  let verti = get_all_verti_values x deep_list |> List.remove_at y in
+  let top = List.take y verti in
+  let right = List.drop x hori in
+  let bottom = List.drop y verti in
+  let left = List.take x hori in
+  top, right, bottom, left
+;;
+
+let is_hidden v path =
+  let no_taller x = x >= v in
+  let t = List.exists no_taller (Tuple4.first path) in
+  let r = List.exists no_taller (Tuple4.second path) in
+  let b = List.exists no_taller (Tuple4.third path) in
+  let k = List.exists no_taller (Tuple4.fourth path) in
+  t && r && b && k
+;;
+
+let walker deep_list =
+    let rec helper_loop x y w h deep_list acc =
+        let v = index_multi_list x y deep_list in
+        print_endline (string_of_int v);
+        let p = find_view_path x y deep_list in
+        let r = is_hidden v p in
+        let end_hori = (x + 1) = w in
+        let end_verti = (y + 1) = h in
+        print_endline ("I'm matching ... " ^ (string_of_bool end_hori) ^ " - " ^ (string_of_bool end_verti));
+        match end_hori, end_verti, r with
+        | true, true, r -> r :: acc
+        | true, _, r -> helper_loop 0 (y+1) w h deep_list (r :: acc)
+        | false, _, r -> helper_loop (x+1) y w h deep_list (r :: acc) in
+    helper_loop 0 0 (List.length (List.hd deep_list)) (List.length deep_list) deep_list []
 
 let input =
-  read_lines "inputs/8_test.txt"
+  read_lines "inputs/8.txt"
   |> remove_empty_string
   |> List.map (fun x ->
     String.explode x |> List.map (String.make 1) |> List.map int_of_string)
 ;;
+
+let bool_vals = walker input
+let result = List.filter (fun x -> x = false) bool_vals |> List.length
+
+let w = List.length (List.hd input)
+let h = List.length input
+
+let outcome_1 = result
+let outcome_2 = 2
 
 let main () =
   Printf.printf "Part 1 total is %d\n" outcome_1;
