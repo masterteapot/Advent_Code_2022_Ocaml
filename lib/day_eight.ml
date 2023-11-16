@@ -58,12 +58,10 @@ let is_hidden v path =
 let walker deep_list =
     let rec helper_loop x y w h deep_list acc =
         let v = index_multi_list x y deep_list in
-        print_endline (string_of_int v);
         let p = find_view_path x y deep_list in
         let r = is_hidden v p in
         let end_hori = (x + 1) = w in
         let end_verti = (y + 1) = h in
-        print_endline ("I'm matching ... " ^ (string_of_bool end_hori) ^ " - " ^ (string_of_bool end_verti));
         match end_hori, end_verti, r with
         | true, true, r -> r :: acc
         | true, _, r -> helper_loop 0 (y+1) w h deep_list (r :: acc)
