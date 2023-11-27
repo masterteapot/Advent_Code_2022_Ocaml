@@ -38,5 +38,9 @@ let () =
   let day = 10 in
   Printf.printf "\n---- Starting Day %d\n" day;
   Adv_2022.Day_ten.main ();
+    Printf.printf "- Ending Day %d\n\n" day;
+  let day = 11 in
+  Printf.printf "\n---- Starting Day %d\n" day;
+  Adv_2022.Day_eleven.main ();
   Printf.printf "- Ending Day %d\n\n" day
 ;;
