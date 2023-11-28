@@ -64,9 +64,10 @@ let run_instructions instructions =
   looper instructions (Noop, 0) 0 1 1 []
 ;;
 
-
 let filter_signals signals =
-  List.filter (fun x -> (fst x = 20 || Int.rem ((fst x) - 20) 40 = 0) && fst x < 221) signals
+  List.filter
+    (fun x -> (fst x = 20 || Int.rem (fst x - 20) 40 = 0) && fst x < 221)
+    signals
 ;;
 
 let signal_strength signals =
@@ -79,42 +80,43 @@ let signal_strength signals =
 ;;
 
 let split_forty a_list =
-    let rec looper a_list in_list output =
-        match a_list with
-        | [] -> List.rev output
-        | hd :: tl when Int.rem (fst hd) 40 = 0 -> looper tl [] ((List.rev (hd :: in_list)) :: output)
-        | hd :: tl -> looper tl (hd :: in_list) output in
-    looper a_list [] []
+  let rec looper a_list in_list output =
+    match a_list with
+    | [] -> List.rev output
+    | hd :: tl when Int.rem (fst hd) 40 = 0 ->
+      looper tl [] (List.rev (hd :: in_list) :: output)
+    | hd :: tl -> looper tl (hd :: in_list) output
+  in
+  looper a_list [] []
+;;
 
-let crt subtractor registers =
-    let rec looper registers subtractor output =
+let crt subtractor num_registers =
+  let rec looper registers subtractor output =
     match registers with
-        | [] -> output
-        | (x, y) :: tl when ((x - subtractor - 1) > y - 2) && ( (x - subtractor - 1) < y + 2) -> looper tl subtractor (output ^ "#")
-        | _ :: tl -> looper tl subtractor (output ^ ".") in
-    looper subtractor registers  ""
+    | [] -> output
+    | (x, y) :: tl when x - subtractor - 1 > y - 2 && x - subtractor - 1 < y + 2 ->
+      looper tl subtractor (output ^ "#")
+    | _ :: tl -> looper tl subtractor (output ^ ".")
+  in
+  looper subtractor num_registers ""
+;;
 
 let crt_loop reg_length registers =
-    let rec looper registers counter output =
-        match registers with
-        | [] -> List.rev output
-        | hd :: tl -> looper tl (counter + 1) (crt hd (counter * reg_length) :: output) in
-    looper registers 0 []
+  let rec looper registers counter output =
+    match registers with
+    | [] -> List.rev output
+    | hd :: tl -> looper tl (counter + 1) (crt hd (counter * reg_length) :: output)
+  in
+  looper registers 0 []
+;;
 
 let input = read_lines "inputs/10.txt" |> remove_empty_string |> List.map parse_input
-(* let test = read_lines "inputs/10_test.txt" |> remove_empty_string |> List.map parse_input |> run_instructions *)
-(* List.iter (fun x -> Printf.printf "%d -> %d\n" (fst x) (snd x)) output1;; *)
-(* List.iter (fun x -> Printf.printf "%d, %d --> %d\n" (fst x) (snd x) (fst x * snd x)) output1 *)
-
 let outcome_1 = run_instructions input |> filter_signals |> signal_strength
-
-(* let test_2 = split_forty test |> crt_loop 40 *)
-(* let test_crt = crt test  *)
 
 let outcome_2 = run_instructions input |> split_forty |> crt_loop 40
 
 let main () =
   Printf.printf "Part 1 total is %d\n" outcome_1;
   Printf.printf "Part %d total is :\n" 2;
-  List.iter print_endline outcome_2;
+  List.iter print_endline outcome_2
 ;;
