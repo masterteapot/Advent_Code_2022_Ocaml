@@ -103,10 +103,9 @@ let input =
   read_lines "inputs/11_test.txt"
   |> group_monkeys
   |> List.filter (fun x -> List.length x > 0)
+  |> List.map parse_monkey
 ;;
 
-let test_monkey = List.hd input
-let test_output = parse_monkey test_monkey
 let outcome_1 = 1
 let outcome_2 = 2
 
