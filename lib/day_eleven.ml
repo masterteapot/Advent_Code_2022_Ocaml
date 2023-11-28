@@ -64,7 +64,7 @@ let parse_monkey input =
       looper tl { monkey with false_monkey = fm }
     (* Get the operand *)
     | hd :: tl when String.starts_with hd "Operation: " ->
-      let ops = String.split_on_string "new = " hd |> List.last in
+      let ops = String.split_on_string ~by:"new = " hd |> List.last in
       let ops = String.split_on_char ' ' ops in
       let stress_operand =
         match List.nth ops 1 with
