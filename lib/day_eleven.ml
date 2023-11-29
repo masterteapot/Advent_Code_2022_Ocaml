@@ -1,7 +1,8 @@
 open Batteries
 
 type monkey =
-  { mutable items : int list
+  { monkey_num : int
+  ; mutable items : int list
   ; stress_eval : int -> int
   ; test : int -> bool
   ; true_monkey : int
@@ -35,7 +36,7 @@ let group_monkeys a_list =
   looper a_list [] []
 ;;
 
-let parse_monkey input =
+let parse_monkey stress_reducer index input =
   let rec looper input monkey =
     match input with
     | [] -> monkey
@@ -82,15 +83,16 @@ let parse_monkey input =
       let operation_on_constant = operation_constant <> 0 in
       let stress_eval =
         if operation_on_constant = true
-        then fun x -> stress_operand x operation_constant / 3
-        else fun x -> stress_operand x x / 3
+        then fun x -> stress_operand x operation_constant / stress_reducer
+        else fun x -> stress_operand x x / stress_reducer
       in
       looper tl { monkey with stress_eval }
     | _ :: tl -> looper tl monkey
   in
   looper
     input
-    { items = []
+    { monkey_num = index
+    ; items = []
     ; num_operations = 0
     ; stress_eval = (fun x -> x + x)
     ; test = (fun x -> x > 0)
@@ -99,15 +101,112 @@ let parse_monkey input =
     }
 ;;
 
+let rec monkey_index counter monkeys =
+  match monkeys with
+  | [] -> []
+  | _ :: tl -> counter :: monkey_index (counter + 1) tl
+;;
+
+let monkey_business rounds monkey_index monkeys =
+  let rec monkey_math index monkeys =
+    let my_monkey = List.nth monkeys index in
+    match my_monkey.items with
+    | [] -> monkeys
+    | item :: tl ->
+      let stress = my_monkey.stress_eval item in
+      let result = my_monkey.test stress in
+      let new_monkey_index =
+        if result = true then my_monkey.true_monkey else my_monkey.false_monkey
+      in
+      my_monkey.items <- tl;
+      my_monkey.num_operations <- my_monkey.num_operations + 1;
+      let new_monkey = List.nth monkeys new_monkey_index in
+      new_monkey.items <- stress :: new_monkey.items;
+      monkey_math index monkeys
+  in
+  let rec monkey_loop monkey_index monkeys =
+    match monkey_index with
+    | [] -> monkeys
+    | i :: tl ->
+      let monkeys = monkey_math i monkeys in
+      monkey_loop tl monkeys
+  in
+  let rec round_loop rounds counter monkey_index monkeys =
+    match counter with
+    | _ when counter > rounds -> monkeys
+    | _ ->
+      let monkeys = monkey_loop monkey_index monkeys in
+      round_loop rounds (counter + 1) monkey_index monkeys
+  in
+  round_loop rounds 1 monkey_index monkeys
+;;
+
 let input =
   read_lines "inputs/11_test.txt"
   |> group_monkeys
   |> List.filter (fun x -> List.length x > 0)
-  |> List.map parse_monkey
 ;;
 
-let outcome_1 = 1
-let outcome_2 = 2
+let input_1 = List.mapi (parse_monkey 3) input
+let mi_1 = monkey_index 0 input_1
+let final_1 = monkey_business 20 mi_1 input_1
+
+let top_2_v1 =
+  List.sort
+    (fun x y ->
+      match x, y with
+      | _ when x.num_operations > y.num_operations -> -1
+      | _ when x.num_operations = y.num_operations -> 0
+      | _ -> 1)
+    final_1
+;;
+
+let top_2_filtered_v1 =
+  match top_2_v1 with
+  | x :: y :: _ -> [ x; y ]
+  | _ -> failwith "Not enough monkeys"
+;;
+
+let monkey_score_1 =
+  (List.first top_2_filtered_v1).num_operations
+  * (List.last top_2_filtered_v1).num_operations
+;;
+let outcome_1 = monkey_score_1
+
+
+let input_2 = List.mapi (parse_monkey 1) input
+let mi_2 = monkey_index 0 input_2
+let final_2 = monkey_business 2000 mi_2 input_2
+
+let top_2_v2 =
+  List.sort
+    (fun x y ->
+      match x, y with
+      | _ when x.num_operations > y.num_operations -> -1
+      | _ when x.num_operations = y.num_operations -> 0
+      | _ -> 1)
+    final_2
+;;
+
+let top_2_filtered_2 =
+  match top_2_v2 with
+  | x :: y :: _ -> [ x; y ]
+  | _ -> failwith "Not enough monkeys"
+;;
+
+let monkey_score_2 =
+  (List.first top_2_filtered_2).num_operations
+  * (List.last top_2_filtered_2).num_operations
+;;
+
+let outcome_2 = monkey_score_2
+
+let () =
+  List.iter
+    (fun x ->
+      Printf.printf "Monkey %d inspected items %d times.\n" x.monkey_num x.num_operations)
+    final_2
+;;
 
 let main () =
   Printf.printf "Part 1 total is %d\n" outcome_1;
