@@ -83,8 +83,8 @@ let parse_monkey stress_reducer index input =
       let operation_on_constant = operation_constant <> 0 in
       let stress_eval =
         if operation_on_constant = true
-        then fun x -> stress_operand x operation_constant / stress_reducer
-        else fun x -> stress_operand x x / stress_reducer
+        then fun x -> stress_reducer (stress_operand x operation_constant)
+        else fun x -> stress_reducer (stress_operand x x)
       in
       looper tl { monkey with stress_eval }
     | _ :: tl -> looper tl monkey
@@ -147,7 +147,7 @@ let input =
   |> List.filter (fun x -> List.length x > 0)
 ;;
 
-let input_1 = List.mapi (parse_monkey 3) input
+let input_1 = List.mapi (parse_monkey (fun x -> x / 3)) input
 let mi_1 = monkey_index 0 input_1
 let final_1 = monkey_business 20 mi_1 input_1
 
@@ -174,9 +174,10 @@ let monkey_score_1 =
 let outcome_1 = monkey_score_1
 
 
-let input_2 = List.mapi (parse_monkey 1) input
+
+let input_2 = List.mapi (parse_monkey (fun x ->  x - 1) ) input
 let mi_2 = monkey_index 0 input_2
-let final_2 = monkey_business 2000 mi_2 input_2
+let final_2 = monkey_business 1000 mi_2 input_2
 
 let top_2_v2 =
   List.sort
