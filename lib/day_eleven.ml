@@ -114,6 +114,7 @@ let monkey_business rounds monkey_index monkeys =
     | [] -> monkeys
     | item :: tl ->
       let stress = my_monkey.stress_eval item in
+      Printf.printf "Item stress is: %d\n" stress;
       let result = my_monkey.test stress in
       let new_monkey_index =
         if result = true then my_monkey.true_monkey else my_monkey.false_monkey
@@ -171,13 +172,11 @@ let monkey_score_1 =
   (List.first top_2_filtered_v1).num_operations
   * (List.last top_2_filtered_v1).num_operations
 ;;
+
 let outcome_1 = monkey_score_1
-
-
-
-let input_2 = List.mapi (parse_monkey (fun x ->  x - 1) ) input
+let input_2 = List.mapi (parse_monkey (fun x -> Int32.of_int x |> Int32.to_int)) input
 let mi_2 = monkey_index 0 input_2
-let final_2 = monkey_business 1000 mi_2 input_2
+let final_2 = monkey_business 20 mi_2 input_2
 
 let top_2_v2 =
   List.sort
