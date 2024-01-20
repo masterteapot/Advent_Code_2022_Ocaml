@@ -30,9 +30,17 @@ let () =
   (* let day = 8 in *)
   (* Printf.printf "\n---- Starting Day %d\n" day; *)
   (* Adv_2022.Day_eight.main (); *)
-  (* Printf.printf "- Ending Day %d\n\n" day; *)
-  let day = 9 in
+  (*   Printf.printf "- Ending Day %d\n\n" day; *)
+  (* let day = 9 in *)
+  (* Printf.printf "\n---- Starting Day %d\n" day; *)
+  (* Adv_2022.Day_nine.main (); *)
+  (*   Printf.printf "- Ending Day %d\n\n" day; *)
+  let day = 10 in
   Printf.printf "\n---- Starting Day %d\n" day;
-  Adv_2022.Day_nine.main ();
+  Adv_2022.Day_ten.main ();
+    Printf.printf "- Ending Day %d\n\n" day;
+  let day = 11 in
+  Printf.printf "\n---- Starting Day %d\n" day;
+  Adv_2022.Day_eleven.main ();
   Printf.printf "- Ending Day %d\n\n" day
 ;;
